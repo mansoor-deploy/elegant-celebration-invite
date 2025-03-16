@@ -7,8 +7,9 @@ import VideoBubble from '@/components/VideoBubble';
 import RSVPForm from '@/components/RSVPForm';
 import VenueMap from '@/components/VenueMap';
 import CalendarButton from '@/components/CalendarButton';
+import PageLoader from '@/components/PageLoader';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Clock, Gift, Heart, Music, Cake, Party } from 'lucide-react';
+import { Calendar, Clock, Gift, Heart, Music, Cake } from 'lucide-react';
 
 const Index = () => {
   // Replace these with your actual event details
@@ -19,6 +20,7 @@ const Index = () => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isBubbleHidden, setIsBubbleHidden] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // For demo purposes
   const audioSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
@@ -39,6 +41,15 @@ const Index = () => {
     startDate: eventDate,
     endDate: eventEndDate
   };
+  
+  useEffect(() => {
+    // Simulate page loading
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
+    
+    return () => clearTimeout(loadingTimer);
+  }, []);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -66,200 +77,204 @@ const Index = () => {
   };
   
   return (
-    <div className="min-h-screen relative">
-      {/* Background Music */}
-      <AudioPlayer 
-        audioSrc={audioSrc} 
-        isVideoPlaying={isVideoPlaying} 
-      />
+    <>
+      <PageLoader isLoading={isLoading} />
       
-      {/* Hero Section */}
-      <section className="min-h-screen flex flex-col items-center justify-center py-20 px-4 text-center relative">
-        <div className="absolute inset-0 bg-[url('/stars-bg.png')] opacity-30 z-0"></div>
+      <div className={`min-h-screen relative ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-1000'}`}>
+        {/* Background Music */}
+        <AudioPlayer 
+          audioSrc={audioSrc} 
+          isVideoPlaying={isVideoPlaying} 
+        />
         
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <h1 className="text-2xl md:text-3xl text-gold-light font-light mb-4 animate-fade-in">
-            YOU'RE INVITED TO
-          </h1>
+        {/* Hero Section */}
+        <section className="min-h-screen flex flex-col items-center justify-center py-20 px-4 text-center relative">
+          <div className="absolute inset-0 bg-[url('/stars-bg.png')] opacity-30 z-0"></div>
           
-          <div className="mb-6 inline-block">
-            <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-2 gold-gradient">
-              Alex's 30th
-            </h2>
-            <h3 className="text-3xl md:text-5xl font-semibold text-white mb-6">
-              Birthday Celebration
-            </h3>
-          </div>
-          
-          <Separator className="w-24 md:w-32 h-0.5 bg-gold/50 mx-auto my-8" />
-          
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-10">
-            <div className="flex items-center gap-2">
-              <Calendar size={24} className="text-gold" />
-              <span className="text-xl">December 31, 2024</span>
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <h1 className="text-2xl md:text-3xl text-gold-light font-light mb-4 animate-fade-in">
+              YOU'RE INVITED TO
+            </h1>
+            
+            <div className="mb-6 inline-block">
+              <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-2 gold-gradient">
+                Alex's 30th
+              </h2>
+              <h3 className="text-3xl md:text-5xl font-semibold text-white mb-6">
+                Birthday Celebration
+              </h3>
             </div>
             
-            <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-gold"></div>
+            <Separator className="w-24 md:w-32 h-0.5 bg-gold/50 mx-auto my-8" />
             
-            <div className="flex items-center gap-2">
-              <Clock size={24} className="text-gold" />
-              <span className="text-xl">7:00 PM</span>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-10">
+              <div className="flex items-center gap-2">
+                <Calendar size={24} className="text-gold" />
+                <span className="text-xl">December 31, 2024</span>
+              </div>
+              
+              <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-gold"></div>
+              
+              <div className="flex items-center gap-2">
+                <Clock size={24} className="text-gold" />
+                <span className="text-xl">7:00 PM</span>
+              </div>
+              
+              <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-gold"></div>
+              
+              <div className="flex items-center gap-2">
+                <Music size={24} className="text-gold" />
+                <span className="text-xl">Cocktail Attire</span>
+              </div>
             </div>
             
-            <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-gold"></div>
+            <div className="mt-12">
+              <h4 className="text-xl mb-4 text-white">Countdown to the Celebration</h4>
+              <Countdown targetDate={eventDate} className="max-w-2xl mx-auto" />
+            </div>
             
-            <div className="flex items-center gap-2">
-              <Music size={24} className="text-gold" />
-              <span className="text-xl">Cocktail Attire</span>
+            <div className="mt-10">
+              <CalendarButton event={calendarEvent} />
             </div>
           </div>
           
-          <div className="mt-12">
-            <h4 className="text-xl mb-4 text-white">Countdown to the Celebration</h4>
-            <Countdown targetDate={eventDate} className="max-w-2xl mx-auto" />
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-8 h-12 border-2 border-gold rounded-full flex items-start justify-center p-2">
+              <div className="w-1 h-3 bg-gold rounded-full"></div>
+            </div>
           </div>
-          
-          <div className="mt-10">
-            <CalendarButton event={calendarEvent} />
-          </div>
-        </div>
+        </section>
         
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-8 h-12 border-2 border-gold rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-gold rounded-full"></div>
-          </div>
-        </div>
-      </section>
-      
-      {/* About Section */}
-      <section className="section bg-navy-light">
-        <div className="container max-w-4xl">
-          <h2 className="section-header text-center">The Celebration</h2>
-          
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="aspect-square overflow-hidden rounded-lg border-4 border-gold/30">
-                <img 
-                  src="/placeholder.svg" 
-                  alt="Alex's Birthday" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+        {/* About Section */}
+        <section className="section bg-navy-light">
+          <div className="container max-w-4xl">
+            <h2 className="section-header text-center">The Celebration</h2>
             
-            <div className="space-y-6">
-              <p className="text-lg leading-relaxed">
-                Join us for an elegant evening to celebrate Alex's 30th birthday. 
-                We've planned an unforgettable night filled with fine dining, 
-                dancing, and creating memories that will last a lifetime.
-              </p>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="aspect-square overflow-hidden rounded-lg border-4 border-gold/30">
+                  <img 
+                    src="/placeholder.svg" 
+                    alt="Alex's Birthday" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
               
-              <p className="text-lg leading-relaxed">
-                Dress in your finest cocktail attire and prepare for a night 
-                of celebration, joy, and honoring three incredible decades!
-              </p>
-              
-              <div className="flex items-center gap-2 text-gold">
-                <Heart size={20} />
-                <span>Hosted with love by The Johnson Family</span>
+              <div className="space-y-6">
+                <p className="text-lg leading-relaxed">
+                  Join us for an elegant evening to celebrate Alex's 30th birthday. 
+                  We've planned an unforgettable night filled with fine dining, 
+                  dancing, and creating memories that will last a lifetime.
+                </p>
+                
+                <p className="text-lg leading-relaxed">
+                  Dress in your finest cocktail attire and prepare for a night 
+                  of celebration, joy, and honoring three incredible decades!
+                </p>
+                
+                <div className="flex items-center gap-2 text-gold">
+                  <Heart size={20} />
+                  <span>Hosted with love by The Johnson Family</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Venue Section */}
-      <section className="section">
-        <div className="container max-w-4xl">
-          <h2 className="section-header text-center">Venue & Details</h2>
-          
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-semibold text-gold-light">Event Schedule</h3>
-              
-              <div className="space-y-4">
-                <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
-                      <Gift size={20} className="text-navy" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gold">7:00 PM - 7:30 PM</h4>
-                      <p>Welcome Reception</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
-                      <Glass size={20} className="text-navy" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gold">7:30 PM - 9:00 PM</h4>
-                      <p>Dinner & Toasts</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
-                      <Cake size={20} className="text-navy" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gold">9:00 PM - 9:30 PM</h4>
-                      <p>Cake Cutting</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
-                      <Music size={20} className="text-navy" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gold">9:30 PM - 2:00 AM</h4>
-                      <p>Dancing & Celebration</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        </section>
+        
+        {/* Venue Section */}
+        <section className="section">
+          <div className="container max-w-4xl">
+            <h2 className="section-header text-center">Venue & Details</h2>
             
-            <div>
-              <VenueMap location={location} />
+            <div className="grid md:grid-cols-2 gap-12">
+              <div className="space-y-6">
+                <h3 className="text-2xl font-semibold text-gold-light">Event Schedule</h3>
+                
+                <div className="space-y-4">
+                  <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
+                        <Gift size={20} className="text-navy" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gold">7:00 PM - 7:30 PM</h4>
+                        <p>Welcome Reception</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
+                        <Glass size={20} className="text-navy" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gold">7:30 PM - 9:00 PM</h4>
+                        <p>Dinner & Toasts</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
+                        <Cake size={20} className="text-navy" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gold">9:00 PM - 9:30 PM</h4>
+                        <p>Cake Cutting</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-navy-light p-4 rounded-lg border border-gold/20">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center flex-shrink-0">
+                        <Music size={20} className="text-navy" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gold">9:30 PM - 2:00 AM</h4>
+                        <p>Dancing & Celebration</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <VenueMap location={location} />
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* RSVP Section */}
-      <section className="section bg-navy-light">
-        <div className="container max-w-4xl">
-          <h2 className="section-header text-center">RSVP</h2>
-          <p className="text-center text-xl mb-10">Please respond by December 1, 2024</p>
-          
-          <RSVPForm />
-        </div>
-      </section>
-      
-      {/* Video Bubble */}
-      <VideoBubble 
-        onClick={handleOpenVideo}
-        isHidden={isBubbleHidden && !hasScrolled}
-      />
-      
-      {/* Video Player */}
-      <VideoPlayer 
-        videoSrc={videoSrc}
-        isOpen={isVideoOpen}
-        onClose={handleCloseVideo}
-        onPlay={() => setIsVideoPlaying(true)}
-        onPause={() => setIsVideoPlaying(false)}
-      />
-    </div>
+        </section>
+        
+        {/* RSVP Section */}
+        <section className="section bg-navy-light">
+          <div className="container max-w-4xl">
+            <h2 className="section-header text-center">RSVP</h2>
+            <p className="text-center text-xl mb-10">Please respond by December 1, 2024</p>
+            
+            <RSVPForm />
+          </div>
+        </section>
+        
+        {/* Video Bubble */}
+        <VideoBubble 
+          onClick={handleOpenVideo}
+          isHidden={isBubbleHidden && !hasScrolled}
+        />
+        
+        {/* Video Player */}
+        <VideoPlayer 
+          videoSrc={videoSrc}
+          isOpen={isVideoOpen}
+          onClose={handleCloseVideo}
+          onPlay={() => setIsVideoPlaying(true)}
+          onPause={() => setIsVideoPlaying(false)}
+        />
+      </div>
+    </>
   );
 };
 

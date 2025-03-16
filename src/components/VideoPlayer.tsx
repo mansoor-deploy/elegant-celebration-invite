@@ -50,15 +50,27 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     if (isOpen && videoRef.current) {
       videoRef.current.play().catch(err => console.log('Video play prevented:', err));
+    } else if (!isOpen && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0; // Reset video position when closed
     }
   }, [isOpen]);
+  
+  const handleCloseClick = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    onClose();
+    onPause(); // Ensure we signal that the video is paused when closing
+  };
   
   return (
     <div className={`video-container ${!isOpen ? 'hidden' : ''}`}>
       <div className="relative max-w-3xl w-full mx-4">
         <button 
           className="absolute -top-12 right-0 text-white hover:text-gold transition-colors"
-          onClick={onClose}
+          onClick={handleCloseClick}
           aria-label="Close video"
         >
           <X size={24} />

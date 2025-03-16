@@ -14,7 +14,7 @@ const VideoBubble: React.FC<VideoBubbleProps> = ({ onClick, isHidden }) => {
       onClick={onClick}
       aria-label="Open invitation video"
     >
-      <Video size={24} className="text-navy animate-float" />
+      <Video size={24} className="text-navy animate-pulse" />
     </div>
   );
 };

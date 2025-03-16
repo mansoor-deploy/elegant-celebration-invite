@@ -9,6 +9,7 @@ interface AudioPlayerProps {
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioSrc, isVideoPlaying }) => {
   const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -16,6 +17,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioSrc, isVideoPlaying }) =
     const handleInteraction = () => {
       if (audioRef.current) {
         audioRef.current.play().catch(err => console.log('Auto-play prevented:', err));
+        setIsPlaying(true);
       }
       document.removeEventListener('click', handleInteraction);
     };
@@ -31,19 +33,23 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioSrc, isVideoPlaying }) =
     if (audioRef.current) {
       if (isVideoPlaying) {
         audioRef.current.pause();
-      } else if (!isMuted) {
+        setIsPlaying(false);
+      } else if (!isMuted && isPlaying) {
+        // Only resume if it was previously playing
         audioRef.current.play().catch(err => console.log('Play prevented:', err));
       }
     }
-  }, [isVideoPlaying, isMuted]);
+  }, [isVideoPlaying, isMuted, isPlaying]);
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
     if (audioRef.current) {
       if (isMuted) {
         audioRef.current.play().catch(err => console.log('Play prevented:', err));
+        setIsPlaying(true);
       } else {
         audioRef.current.pause();
+        setIsPlaying(false);
       }
     }
   };

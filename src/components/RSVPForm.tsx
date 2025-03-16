@@ -33,9 +33,13 @@ const RSVPForm: React.FC = () => {
     // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);
+      
+      // Show success toast
       toast({
         title: "RSVP Received!",
-        description: "Thank you for your response. We look forward to celebrating with you!",
+        description: formData.attendance === 'yes' 
+          ? `Thank you, ${formData.name}! We look forward to celebrating with you and your guests.` 
+          : `Thank you for your response, ${formData.name}. We'll miss you at the celebration!`,
         variant: "default",
       });
       
